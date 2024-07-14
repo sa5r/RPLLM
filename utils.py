@@ -1,5 +1,8 @@
+import random
+import numpy as np
+
 class Utils:
-    """Utility functions called by the model operations .
+    """Utility functions called by the model functions .
     """
 
     def __init__(self, time_stamp):

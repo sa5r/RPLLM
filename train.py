@@ -1,11 +1,14 @@
 from datetime import datetime
-import os
-import random
 import argparse
 import torch
+from tqdm import tqdm
 from utils import Utils
 from model import KGDataset,Llama
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import DataLoader
+from torch.optim import lr_scheduler
+# import transformers
+# from transformers import LlamaTokenizer, LlamaForSequenceClassification
+# from transformers import LlamaModel, LlamaConfig
 
 def main():
     """
@@ -70,5 +73,55 @@ def main():
                                       batch_size = args.batch_size,
                                     worker_init_fn=utils.seed_worker,
                                     generator=g, shuffle=True)
+    
+    # Initializing the model
+    llama = Llama(relations, args.model_id, args.repo_token, args.attention_dropout)
+    model = llama.get_model()
+    model.resize_token_embeddings(training_set.tokenizer_len())
+    model.to(device)
+    loss_f = torch.nn.CrossEntropyLoss()
+    optimizer = torch.optim.Adam(model.parameters(), lr = args.learning_rate )
+    scheduler = lr_scheduler.StepLR(optimizer, gamma=args.decay, step_size = 1)
+
+    v_loss = 1_000_000
+    no_change_counter = 1
+    for epoch in range(args.epochs):
+        print(f'\nEpoch {epoch + 1}\n-------------------------------')
+        lr = optimizer.param_groups[0]['lr']
+        model.train()
+        loop = tqdm(training_generator, disable = not args.verbose)
+
+        # Loop over batches within epoch using DataLoader
+        for _, data in enumerate(loop):
+            inputs = data[0].to(device)
+            optimizer.zero_grad()
+            logits = model(**inputs).logits
+            loss = loss_f(logits , data[1].to(device))
+            loss.backward()       
+            optimizer.step()
+            last_loss = loss.item()
+        
+        v_losses = []
+        model.eval()
+        with torch.no_grad():
+            for _, data in enumerate(validation_generator):
+                inputs = data[0].to(device)
+                logits = model(**inputs).logits
+                loss = loss_f(logits , data[1].to(device))
+                v_losses.append(loss)
+            
+            v_loss_epoch = sum(v_losses) / len(v_losses)
+            utils.write_log(f'lr {lr:8f} train loss {last_loss:.8f} val loss {v_loss_epoch:.8f}')
+
+            if v_loss - v_loss_epoch > 0.00001:
+                v_loss = v_loss_epoch
+                no_change_counter = 0
+                torch.save(model.state_dict(), utils.get_timestamp()+'chkpnt.pt')
+            elif no_change_counter > args.patience - 1:
+                break
+            else:
+                no_change_counter += 1
+        
+        scheduler.step()
 
 if __name__ == "__main__": main()
