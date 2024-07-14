@@ -3,13 +3,13 @@
 ## Abstract
 Knowledge Graphs have been widely used to represent facts in a structured format. Due to their large-scale applications, knowledge graphs suffer from being incomplete. The relation prediction task obtains knowledge graph completion by assigning one or more possible relations to each pair of nodes. In this work, we make use of the knowledge graph node names to fine-tune a large language model for the relation prediction task. By utilizing the node names only, we enable our model to operate sufficiently in the inductive settings. Our experiments show that we accomplish new scores on a widely used knowledge graph benchmark.
 
-<img src="RPLLM.png" width="500">
+<img src="RPLLM.png" width="650">
 
 ## Software Requirements
-- Python 3.9
+- Python 3.8
 - PtyTorch 2.1
-- Networkx 2.8
-- TQDM 4
+- transformers 4.*
+- tqdm 4
 
 **Install Requirements**
 ```
