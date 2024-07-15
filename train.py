@@ -7,6 +7,9 @@ from model import KGDataset,Llama
 from torch.utils.data import DataLoader
 from torch.optim import lr_scheduler
 
+# Prevents many tokenizer warnings
+transformers.logging.set_verbosity_error()
+
 def main():
     """
     """

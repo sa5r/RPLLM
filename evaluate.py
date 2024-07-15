@@ -7,6 +7,9 @@ from utils import Utils
 from model import KGDataset,Llama
 from torch.utils.data import DataLoader
 
+# Prevents many tokenizer warnings
+transformers.logging.set_verbosity_error()
+
 def main():
     """
     """
