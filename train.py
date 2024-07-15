@@ -6,9 +6,6 @@ from utils import Utils
 from model import KGDataset,Llama
 from torch.utils.data import DataLoader
 from torch.optim import lr_scheduler
-# import transformers
-# from transformers import LlamaTokenizer, LlamaForSequenceClassification
-# from transformers import LlamaModel, LlamaConfig
 
 def main():
     """
@@ -41,8 +38,6 @@ def main():
     
     time_stamp = datetime.now().strftime('%Y-%m-%d_%H_%M_%S')
 
-    # To be removed from the online repo
-
     # Load utilities
     utils = Utils(time_stamp)
     relations = utils.load_relations(args.dataset_directory + '/relations.txt')    
@@ -50,12 +45,6 @@ def main():
     # Loading GPU
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     utils.write_log('\ndevice ' + str(device))
-
-#     train(relations=relations, args=args, \
-#             utils = utils, generator=g,
-#             training_triples='train.tsv',
-#             validation_triples='dev.tsv',
-#             device=device)
     
     # Load training set
     training_set = KGDataset(args=args,
