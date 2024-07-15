@@ -22,26 +22,28 @@ python3 -m pip install transformers
 ## Hardware Requirements
  - GPU node > 80GB
 
-## FreeBase Dataset
+## Evaluation Datasets
+
+### FreeBase Dataset
 
 We evaluated our model on FB15K, which is a subset of FreeBase dataset. A copy of the dataset is provided in the `data` folder and the raw dataset can be downloaded using the link below.
 
 [Download Raw Dataset](https://www.microsoft.com/en-us/download/details.aspx?id=52312)
 
-## WordNet Dataset
+### WordNet Dataset
 
-We evaluated our model on WN18, that is 
+We evaluated our model on WN18, which is a subset of WordNet dataset. A copy of the dataset is provided in the `data` folder.
 
 ## Run Training
 
 The training script uses the same parameters reported in our paper.
 
 ```
-./run.sh train chkpnt.pt data/FB15K n2v_embeddings.csv glove.6B.300d.txt > output.out &
+./run.sh train CHECKPOINT_NAME DATA_PATH LLAMA2_TOKEN > output.out
 ```
 
 ## Run Evaluation
 
 ```
-./run.sh train chkpnt.pt data/FB15K n2v_embeddings.csv glove.6B.300d.txt > output.out &
+./run.sh test CHECKPOINT_NAME DATA_PATH LLAMA2_TOKEN > output.out
 ```
